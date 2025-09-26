@@ -20,6 +20,10 @@ app.use("/api/product",productRoute)
 app.use("/api/user",userRoute)
 app.use("/api/auth",authRoute)
 
+app.get("/",(req,res)=>{
+    res.send("API is running....")
+})
+
 
 app.listen(port,()=>{
     dbConnection()
