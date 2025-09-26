@@ -1,6 +1,5 @@
 import { validationResult } from 'express-validator';
-import User from '../models/User.js';
-
+import User from '../models/userModel.js';
 // Create a new doctor
 export async function createDoctor(req, res) {
   const errors = validationResult(req);

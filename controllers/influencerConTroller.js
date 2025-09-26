@@ -1,5 +1,5 @@
 import { validationResult } from 'express-validator';
-import User from '../models/User.js';
+import User from '../models/userModel.js';
 
 // Create a new influencer
 export async function createInfluencer(req, res) {
