@@ -5,6 +5,7 @@ import userRoute from "./routes/userRoute.js";
 import authRoute from "./routes/authRoute.js";
 import dotenv from "dotenv";
 import dbConnection from "./config/db.js";
+import cors from "cors";
 
 dotenv.config();
 
@@ -13,6 +14,25 @@ dbConnection();
 const port = process.env.PORT;
 
 const app = express();
+
+const allowedOrigins = [
+  "http://localhost:3000",
+  "https://wellness-fuel.vercel.app"
+];
+
+app.use(
+  cors({
+    origin: (origin, callback) => {
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error("Not allowed by CORS"));
+      }
+    },
+    credentials: true,
+  })
+);
+app.use(express.urlencoded({ extended: true }));
 
 app.use(express.json());
 
