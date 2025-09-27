@@ -2,12 +2,26 @@ import { Router } from "express";
 import { productGenerate } from "../controllers/productsController.js";
 import multer from "multer";
 
-const route= Router()
+const router= Router()
 
 
 const upload = multer({ storage: multer.memoryStorage() });
 
-route.get("/productGenerate",upload.array('images', 4),productGenerate)
+router.get("/productGenerate",upload.array('images', 4),productGenerate)
+
+router.post('/', createProduct);        
+router.get('/', getAllProducts);          
 
 
-export default route
+router.get('/category/:category', getProductsByCategory);
+
+
+router.get('/:id', getProductById);       
+router.put('/:id', updateProduct);       
+router.delete('/:id', deleteProduct);      
+
+
+router.patch('/:id/stock', updateStock); 
+
+
+export default router

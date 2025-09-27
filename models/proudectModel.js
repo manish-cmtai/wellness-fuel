@@ -68,7 +68,10 @@ const productSchema = new mongoose.Schema({
   manufacturer: {
     type: String,
     required: true
-  }
+  },
+  images:[{
+    type: String
+  }]
   
 }, {
   timestamps: true

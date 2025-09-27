@@ -7,6 +7,8 @@ import dotenv from "dotenv";
 import dbConnection from "./config/db.js";
 import cors from "cors";
 import ratingRouter from "./routes/ratingRoute.js";
+import categoryRoutes from "./routes/categoryRoute.js";
+import orderRoutes from './routes/orderRoute.js';
 
 dotenv.config();
 
@@ -37,11 +39,13 @@ app.use(express.urlencoded({ extended: true }));
 
 app.use(express.json());
 
-app.use("/v1/blog", blogRoute);
-app.use("/v1/product", productRoute);
-app.use("/v1/user", userRoute);
+app.use("/v1/blogs", blogRoute);
+app.use("/v1/products", productRoute);
+app.use("/v1/users", userRoute);
 app.use("/v1/auth", authRoute);
-app.use("/v1/rating", ratingRouter);
+app.use("/v1/ratings", ratingRouter);
+app.use("/v1/categories", categoryRoutes);
+app.use('/v1/orders', orderRoutes);
 
 app.get("/", (req, res) => {
   res.send("API is running....");
