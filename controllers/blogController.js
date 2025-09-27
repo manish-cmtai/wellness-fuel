@@ -11,22 +11,31 @@ const client = new OpenAI({
 
 
 export function parseJsonString(jsonString) {
-    try {
-        // Step 1: Remove escaped newlines and extra spaces
-        const cleanString = jsonString
-            .replace(/\n/g, '')  // Remove literal newlines
-            .replace(/\r/g, '')  // Remove carriage returns
-            .trim();
+  try {
+    // Step 1: Clean string
+    const cleanString = jsonString
+      .replace(/\n/g, "")
+      .replace(/\r/g, "")
+      .trim();
 
-        // Step 2: Parse into JSON object
-        const jsonData = JSON.parse(cleanString);
-
-        return jsonData;
-    } catch (err) {
-        console.error('Failed to parse JSON string:', err);
-        console.log('Raw input:', jsonString);
+    // Step 2: Try direct JSON parse
+    return JSON.parse(cleanString);
+  } catch (err) {
+    // Step 3: Try extracting JSON block with regex
+    const match = jsonString.match(/\{[\s\S]*\}/);
+    if (match) {
+      try {
+        return JSON.parse(match[0]);
+      } catch (e) {
+        console.error("Still failed JSON parse:", e);
         return null;
+      }
     }
+
+    console.error("Failed to parse JSON string:", err);
+    console.log("Raw input:", jsonString);
+    return null;
+  }
 }
 
 
@@ -39,38 +48,45 @@ export const blogGenerate = async (req, res) => {
       input: [
         {
           role: "system",
-          content: `You are a blog writer. Generate a blog in JSON format based on the following requirements:
+          content: `You are a blog writer. Generate a blog in pure JSON format (no explanations, no images, no text outside JSON).  
+Follow this schema (camelCase keys only, no spaces in keys):
 
-- Blog Title
-- Category
-- Excerpt
-- Meta Description (max 120-130 characters)
-- Read Time
-- Status
-- Author
-- Tags (comma-separated)
-- Meta Title
-- Meta Keywords (comma-separated)
-- Open Graph Title
-- Open Graph Description
-
-Example Output:
 {
-  "Blog Title": "The Ultimate Guide to Wellness and Healthy Living",
-  "Category": "health & wellness",
-  "Excerpt": "Discover the secrets to a healthier lifestyle with our comprehensive guide covering nutrition, exercise, and mental wellness.",
-  "Meta Description": "Learn about wellness and healthy living with practical tips on nutrition, fitness, and mental health.",
-  "Read Time": "8 min read",
-  "Status": "Draft",
-  "Author": "Dr. Sarah Johnson",
-  "Tags": "wellness, health, lifestyle, nutrition, fitness",
-  "Meta Title": "The Ultimate Guide to Wellness and Healthy Living | Wellness Fuel",
-  "Meta Keywords": "wellness, health, lifestyle, nutrition, fitness, healthy living, wellness guide",
-  "Open Graph Title": "The Ultimate Guide to Wellness and Healthy Living",
-  "Open Graph Description": "Discover the secrets to a healthier lifestyle with practical tips covering nutrition, exercise, and mental health."
+  "title": "string",
+  "slug": "string (URL-friendly version of title)",
+  "category": "string",
+  "excerpt": "string",
+  "content": "string",
+  "metaDescription": "string (120-130 chars)",
+  "readTime": number,
+  "status": "draft" | "published" | "archived",
+  "author": "string",
+  "tags": "comma,separated,tags",
+  "metaTitle": "string",
+  "metaKeywords": "comma,separated,keywords",
+  "ogTitle": "string",
+  "ogDescription": "string",
+  "canonicalUrl": "string",
 }
 
-Now, generate a blog JSON .only JSON not "Here's a blog in JSON format based on the title \"Doctor\":  `,
+Example:
+{
+  "title": "The Ultimate Guide to Wellness and Healthy Living",
+  "slug": "ultimate-guide-wellness-healthy-living",
+  "category": "Health & Wellness",
+  "excerpt": "Discover the secrets to a healthier lifestyle with practical tips on nutrition, exercise, and mindfulness.",
+  "content": "Full blog content goes here...",
+  "metaDescription": "Learn about wellness and healthy living with tips on nutrition, fitness, and mindfulness for a balanced lifestyle.",
+  "readTime": 8,
+  "status": "draft",
+  "author": "Dr. Sarah Johnson",
+  "tags": "wellness,health,lifestyle,nutrition,fitness",
+  "metaTitle": "The Ultimate Guide to Wellness and Healthy Living | Wellness Fuel",
+  "metaKeywords": "wellness,health,lifestyle,nutrition,fitness,healthy living,wellness guide",
+  "ogTitle": "The Ultimate Guide to Wellness and Healthy Living",
+  "ogDescription": "Discover the secrets to a healthier lifestyle with practical tips covering nutrition, exercise, and mental health.",
+  "canonicalUrl": "https://wellnessfuel.com/blog/ultimate-guide-wellness-healthy-living",
+}`,
         },
         {
           role: "user",
@@ -79,27 +95,28 @@ Now, generate a blog JSON .only JSON not "Here's a blog in JSON format based on 
       ],
     });
 
-    console.log(response.output_text);
-    const parseJsonData=parseJsonString(response.output_text)
+    const rawOutput = response.output_text;
 
-    if (!parseJsonData) {
-        return res.status(500).json({
-            message :"no Parse Data"
-        })
+    const parsedJson = parseJsonString(rawOutput);
+
+    if (!parsedJson) {
+      return res.status(500).json({ success: false, message: "Failed to parse blog JSON" });
     }
-    
-    res.status(200).json({
-      reply: parseJsonData,
+
+    return res.status(200).json({
+      success: true,
+      reply: parsedJson,
     });
   } catch (error) {
-    console.log(error);
-    
-    res.status(500).json({
-      message: "sever Error",
-      data: error.message,
+    console.error("Blog generation error:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Server Error",
+      error: error.message,
     });
   }
 };
+
 
 
 export async function createBlog(req, res) {
