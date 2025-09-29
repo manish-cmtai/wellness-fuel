@@ -67,7 +67,21 @@ const UserSchema = new mongoose.Schema(
     },
     language:[{
       type:String
-    }]
+    }],
+    occupation:{
+      type:String
+    },
+    bloodeGroup:{
+      type:String,
+      enum:["A+","A-","B+","B-","AB+","AB-","O+","O-"]
+    },
+    age:{
+      type:Number
+    },
+    maritalStatus:{
+      type:String,
+      enum:["Single","Married","Divorced","Widowed"]
+    }
 
   },
   { timestamps: true }

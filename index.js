@@ -9,6 +9,7 @@ import cors from "cors";
 import ratingRouter from "./routes/ratingRoute.js";
 import categoryRoutes from "./routes/categoryRoute.js";
 import orderRoutes from './routes/orderRoute.js';
+import leadRoutes from './routes/leadRoute.js';
 
 dotenv.config();
 
@@ -46,6 +47,7 @@ app.use("/v1/auth", authRoute);
 app.use("/v1/ratings", ratingRouter);
 app.use("/v1/categories", categoryRoutes);
 app.use('/v1/orders', orderRoutes);
+app.use('/v1/leads', leadRoutes);
 
 app.get("/", (req, res) => {
   res.send("API is running....");
