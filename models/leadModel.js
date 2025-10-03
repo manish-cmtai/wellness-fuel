@@ -1,44 +1,28 @@
 import  { model, Schema } from 'mongoose';
 
 const leadSchema = new Schema({
-  // Contact info
-  firstName: {
-    type: String,
-    trim: true,
-    required: [true, 'First name is required'],
-    minlength: [2, 'First name must be at least 2 characters'],
-    maxlength: [60, 'First name cannot exceed 60 characters']
-  },
-  lastName: {
-    type: String,
-    trim: true,
-    required: [true, 'Last name is required'],
-    minlength: [1, 'Last name must be at least 1 character'],
-    maxlength: [60, 'Last name cannot exceed 60 characters']
+  name:{
+    type:String,
+    required:true
   },
   email: {
     type: String,
-    trim: true,
     required: [true, 'Email is required'],
     lowercase: true,
-    match: [/^\S+@\S+\.\S+$/, 'Email is invalid'],
-    index: true
   },
   phone: {
     type: String,
-    trim: true
+    trim: true,
+    required:true
   },
 
-  // Company and role
-  company: {
+  subject:{
     type: String,
-    trim: true,
-    maxlength: [120, 'Company cannot exceed 120 characters']
+   
   },
-  position: {
-    type: String,
-    trim: true,
-    maxlength: [80, 'Position cannot exceed 80 characters']
+  message:{
+    type:String,
+   
   },
 
   // Lead status and meta
@@ -64,19 +48,15 @@ const leadSchema = new Schema({
     default: 0
   },
 
-  // Assignment
-  assignedTo: {
-    type: String,
-    trim: true,
-    default: 'Unassigned'
-    // alternatively: Schema.Types.ObjectId ref: 'Team' or 'User'
-  },
-
   // Notes
   notes: {
     type: String,
     trim: true,
     maxlength: [1000, 'Notes cannot exceed 1000 characters']
+  },
+
+  lastContact:{
+    type:String
   }
 }, { timestamps: true });
 

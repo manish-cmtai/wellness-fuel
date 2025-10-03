@@ -1,3 +1,4 @@
+import Session from "../models/sessionModel.js";
 import User from "../models/userModel.js";
 import generateToken from "../utils/generateToken.js";
 import passwordCheck from "../utils/passwordCheck.js";
@@ -5,6 +6,10 @@ import passwordCheck from "../utils/passwordCheck.js";
 export const login= async(req,res)=>{
     const {email,password}=req.body
     
+    const ip = req.headers["x-forwarded-for"]?.split(",")[0] ||  req.socket.remoteAddress;
+     const userAgent = req.headers["user-agent"];
+     console.log(ip,userAgent);
+     
     if(!email||!password){
         res.status(403).json({
             message:"All Detail Required"
@@ -29,8 +34,19 @@ export const login= async(req,res)=>{
             })
         }
           const token = generateToken(user._id)
+
+          const session= await Session.create({
+            user:user._id,
+            userAgent,
+            ipAddress:ip,
+            isValid:true,
+            createdAt:Date.now(),
+            expiresAt:Date.now() +  24*60*60*1000,
+            token,
+            
+          })
           
-        res.status(200).cookie("token",token).json({
+       return res.status(200).cookie("token",token).json({
             message:"login"
         })
     } catch (error) {

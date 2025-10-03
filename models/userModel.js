@@ -29,7 +29,6 @@ const UserSchema = new mongoose.Schema(
     },
     specialization:{
       type:String,
-      enum:["Cardiology","Neurology","Orthopedics","Pediatrics","Dermatology","Ophthalmology"]
     },
     location:{
       type:String
@@ -81,8 +80,11 @@ const UserSchema = new mongoose.Schema(
     maritalStatus:{
       type:String,
       enum:["Single","Married","Divorced","Widowed"]
+    },
+    twoFactorEnabled:{
+      type:Boolean,
+      default:false
     }
-
   },
   { timestamps: true }
 );

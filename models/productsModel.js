@@ -25,10 +25,6 @@ const productSchema = new mongoose.Schema({
     }
   },
   
-  originalPrice: {
-    type: Number
-  },
-  
   stockQuantity: {
     type: Number,
     required: true,

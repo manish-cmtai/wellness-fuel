@@ -33,12 +33,55 @@ export const createUser = async (req, res) => {
 // Get all users
 export const getUsers = async (req, res) => {
   try {
-    const users = await User.find().sort({ createdAt: -1 });
-    res.status(200).json({ success: true, users });
+    const {
+      page = 1,
+      limit = 10,
+      role,          // optional filter: Admin/Doctor/Influencer/Customer
+      status,        // optional filter: Active/Inactive
+      search         // optional search on name/email/phone
+    } = req.query;
+
+    const filter = {};
+    if (role) filter.role = role;
+    if (status) filter.status = status;
+    if (search) {
+      const rx = new RegExp(search, 'i');
+      filter.$or = [
+        { firstName: rx },
+        { lastName: rx },
+        { email: rx },
+        { phone: rx }
+      ];
+    }
+
+    const skip = (Number(page) - 1) * Number(limit);
+
+    const [users, total] = await Promise.all([
+      User.find(filter)
+        .sort({ createdAt: -1 })
+        .skip(skip)
+        .limit(Number(limit))
+        .select('-password'), // hide sensitive field if present
+      User.countDocuments(filter)
+    ]);
+
+    res.status(200).json({
+      success: true,
+      data: users,
+      pagination: {
+        page: Number(page),
+        limit: Number(limit),
+        total,
+        pages: Math.ceil(total / Number(limit)),
+        hasNext: Number(page) * Number(limit) < total,
+        hasPrev: Number(page) > 1
+      }
+    });
   } catch (error) {
-    res.status(500).json({ success: false, message: "Server Error", error: error.message });
+    res.status(500).json({ success: false, message: 'Server Error', error: error.message });
   }
 };
+
 
 // Get single user by ID
 export const getUserById = async (req, res) => {

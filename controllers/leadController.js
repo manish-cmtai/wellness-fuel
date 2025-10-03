@@ -5,8 +5,15 @@ const isValidId = (id) => mongoose.isValidObjectId(id);
 
 // CREATE
 export async function createLead(req, res) {
+  const { name, email, phone } = req.body;
+  if (!name || !email || !phone) {
+    return res.status(400).json({ success: false, message: 'name, email, and phone are required' });
+  }
   try {
     const lead = await Lead.create(req.body);
+    if(!lead){
+      return res.status(400).json({ success: false, message: 'Lead creation failed' });
+    }
     res.status(201).json({
       success: true,
       message: 'Lead created successfully',
