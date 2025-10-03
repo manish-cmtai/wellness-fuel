@@ -19,6 +19,9 @@ const productSchema = new mongoose.Schema({
     currency: {
       type: String,
       default: 'Rs'
+    },
+    mrp:{
+      type: Number,
     }
   },
   

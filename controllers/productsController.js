@@ -2,7 +2,7 @@
 import { OpenAI } from "openai";
 import dotenv from "dotenv";
 import { parseJsonString } from "./blogController.js";
-import Product from '../models/proudectModel.js';
+import Product from '../models/productsModel.js';
 
 dotenv.config();
 
