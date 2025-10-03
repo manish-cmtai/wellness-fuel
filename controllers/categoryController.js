@@ -1,11 +1,16 @@
 import Category from "../models/categoryModel.js";
+import {uploadToS3, deleteOldImage ,upload} from "../config/s3Config.js"
 
 
 // Create Category
-export const createCategory = async (req, res) => {
+export const createCategory =  async (req, res) => {
   try {
-    const { name, slug, description, imageUrl, status, parentCategory, metaTitle, metaDescription } = req.body;
+    const { name, slug, description, status, parentCategory, metaTitle, metaDescription } = req.body;
+    let imageUrl = "";
 
+    if (req.file) {
+      imageUrl = await uploadToS3(req.file);
+    }
     if (!name || !slug) {
       return res.status(400).json({ success: false, message: "Name and slug are required" });
     }

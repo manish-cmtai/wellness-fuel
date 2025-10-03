@@ -84,7 +84,7 @@ const UserSchema = new mongoose.Schema(
     twoFactorEnabled:{
       type:Boolean,
       default:false
-    }
+    },imageUrl:{ type: String  }
   },
   { timestamps: true }
 );

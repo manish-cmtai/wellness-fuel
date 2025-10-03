@@ -28,7 +28,7 @@ const leadSchema = new Schema({
   // Lead status and meta
   status: {
     type: String,
-    enum: ['New', 'Contacted', 'Qualified', 'Proposal', 'Negotiation', 'Closed Won', 'Closed Lost'],
+    enum: ['New', 'Contacted',  'Proposal', "losted"],
     default: 'New',
     index: true
   },
@@ -36,11 +36,6 @@ const leadSchema = new Schema({
     type: String,
     enum: ['Low', 'Medium', 'High'],
     default: 'Medium'
-  },
-  source: {
-    type: String,
-    enum: ['Website', 'Referral', 'Email', 'Phone', 'Event', 'Ads', 'Other'],
-    default: 'Website'
   },
   estimatedValue: {
     type: Number,

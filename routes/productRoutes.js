@@ -1,11 +1,8 @@
 import { Router } from "express";
 import { createProduct, deleteProduct, getAllProducts, getProductById, getProductsByCategory, productGenerate, updateProduct, updateStock } from "../controllers/productsController.js";
-import multer from "multer";
+import { upload } from "../config/s3Config.js";
 
 const router= Router()
-
-
-const upload = multer({ storage: multer.memoryStorage() });
 
 router.get("/productGenerate",upload.array('images', 4),productGenerate)
 

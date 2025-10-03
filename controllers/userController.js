@@ -1,3 +1,4 @@
+import { deleteOldImage, uploadToS3 } from "../config/s3Config.js";
 import User from "../models/userModel.js";
 
 // Create a new user
@@ -8,7 +9,9 @@ export const createUser = async (req, res) => {
     if (!data.firstName || !data.lastName || !data.email || !data.password) {
       return res.status(400).json({ success: false, message: "First name, last name, email, and password are required" });
     }
-
+    if (req.file) {
+      data.imageUrl = await uploadToS3(req.file);
+    }
     
     // Check if email already exists
     const existingUser = await User.findOne({ email: data.email });
@@ -16,9 +19,8 @@ export const createUser = async (req, res) => {
       return res.status(400).json({ success: false, message: "Email already exists" });
     }
 
-    const user = new User(data).select("- password");
+    const user =await User.create(data);
 
-    await user.save();
     res.status(201).json({ success: true, message: "User created successfully", user });
   } catch (error) {
     res.status(500).json({ success: false, message: "Server Error", error: error.message });
@@ -97,6 +99,12 @@ export const getUserById = async (req, res) => {
 export const updateUser = async (req, res) => {
   try {
     const updates = req.body;
+    if (req.file) {
+      const user = await User.findById(req.params.id);
+      if (user?.imageUrl) await deleteOldImage(user.imageUrl);
+      updates.imageUrl = await uploadToS3(req.file);
+    }
+
     const user = await User.findByIdAndUpdate(req.params.id, updates, {
       new: true,
       runValidators: true,

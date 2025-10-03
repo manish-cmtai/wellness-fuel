@@ -1,6 +1,6 @@
-import mongoose from 'mongoose';
+import {model, Schema} from 'mongoose';
 
-const { Schema } = mongoose;
+
 
 const OrderItemSchema = new Schema(
   {
@@ -77,6 +77,6 @@ OrderSchema.pre('validate', function (next) {
   }
 });
 
-const Order = mongoose.model('Order', OrderSchema);
+const Order = model('Order', OrderSchema);
 
 export default Order;
