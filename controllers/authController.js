@@ -2,6 +2,7 @@ import Session from "../models/sessionModel.js";
 import User from "../models/userModel.js";
 import generateToken from "../utils/generateToken.js";
 import passwordCheck from "../utils/passwordCheck.js";
+import {UAParser} from "ua-parser-js";
 
 export const login= async(req,res)=>{
     const {email,password}=req.body
@@ -35,6 +36,8 @@ export const login= async(req,res)=>{
         }
           const token = generateToken(user._id)
 
+            const parser = new UAParser(req.headers["user-agent"]);
+             const deviceInfo = parser.getResult();
           const session= await Session.create({
             user:user._id,
             userAgent,
@@ -43,16 +46,19 @@ export const login= async(req,res)=>{
             createdAt:Date.now(),
             expiresAt:Date.now() +  24*60*60*1000,
             token,
-            
+            deviceInfo
+
           })
           
        return res.status(200).cookie("token",token).json({
-            message:"login"
+            message:"login",
+            session
         })
     } catch (error) {
         console.log("login problem");
         res.status(500).json({
-            message:"Backend Error"
+            message:"Backend Error",
+            error:error.message
         })
     }
 }
