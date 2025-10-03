@@ -167,12 +167,13 @@ export const getAllProducts = async (req, res) => {
     res.status(200).json({
       success: true,
       data: products,
-      pagination: {
-        currentPage: page,
-        totalPages: Math.ceil(total / limit),
-        totalProducts: total,
-        hasNext: page < Math.ceil(total / limit),
-        hasPrev: page > 1
+        pagination: {
+        page: Number(page),
+        limit: Number(limit),
+        total,
+        pages: Math.ceil(total / Number(limit)),
+        hasNext: Number(page) * Number(limit) < total,
+        hasPrev: Number(page) > 1
       }
     });
   } catch (error) {

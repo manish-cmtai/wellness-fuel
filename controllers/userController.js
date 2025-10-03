@@ -3,25 +3,20 @@ import User from "../models/userModel.js";
 // Create a new user
 export const createUser = async (req, res) => {
   try {
-    const { firstName, lastName, email, phone, role, dateOfBirth, address, bio,password } = req.body;
+    const data = req.body;
 
+    if (!data.firstName || !data.lastName || !data.email || !data.password) {
+      return res.status(400).json({ success: false, message: "First name, last name, email, and password are required" });
+    }
+
+    
     // Check if email already exists
-    const existingUser = await User.findOne({ email });
+    const existingUser = await User.findOne({ email: data.email });
     if (existingUser) {
       return res.status(400).json({ success: false, message: "Email already exists" });
     }
 
-    const user = new User({
-      firstName,
-      lastName,
-      email,
-      phone,
-      role,
-      dateOfBirth,
-      address,
-      bio,
-      password
-    }).select("- password");
+    const user = new User(data).select("- password");
 
     await user.save();
     res.status(201).json({ success: true, message: "User created successfully", user });

@@ -60,11 +60,13 @@ export async function listOrders(req, res) {
 
     res.json({
       data: orders,
-      pagination: {
+       pagination: {
         page: Number(page),
         limit: Number(limit),
         total,
-        pages: Math.ceil(total / limit)
+        pages: Math.ceil(total / Number(limit)),
+        hasNext: Number(page) * Number(limit) < total,
+        hasPrev: Number(page) > 1
       }
     });
   } catch (err) {

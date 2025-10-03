@@ -188,13 +188,13 @@ export async function getAllBlogs(req, res) {
       data: {
         blogs,
         pagination: {
-          currentPage: parseInt(page),
-          totalPages: Math.ceil(total / limit),
-          totalBlogs: total,
-          hasNext: page < Math.ceil(total / limit),
-          hasPrev: page > 1
-        }
-      }
+        page: Number(page),
+        limit: Number(limit),
+        total,
+        pages: Math.ceil(total / Number(limit)),
+        hasNext: Number(page) * Number(limit) < total,
+        hasPrev: Number(page) > 1
+      }}
     });
   } catch (error) {
     res.status(400).json({
