@@ -29,7 +29,7 @@ const OrderSchema = new Schema(
     },
     paymentStatus: {
       type: String,
-      enum: ['Paid', 'Pending', 'Failed', 'Refunded',"Processing"],
+      enum: ['Paid', 'Pending', 'Failed', 'Refunded'],
       default: 'Pending'
     },
     status: {
@@ -46,7 +46,7 @@ const OrderSchema = new Schema(
     couponCode: { type: String  },
     discountType: { type: String, enum: ['Percentage', 'Fixed'] },
     discountValue: { type: Number, default: 0 },
-    address:{ type: Schema.Types.ObjectId, ref: 'Address'  }
+    billingAddress: { type: Schema.Types.ObjectId, ref: 'Address'  }
   },
   { timestamps: true }
 );

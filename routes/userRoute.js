@@ -7,7 +7,7 @@ import {
   deleteUser,
 } from "../controllers/userController.js";
 import { createDoctor, getAllDoctors, getDoctorById, toggleDoctorStatus, updateDoctor } from "../controllers/doctorUserController.js";
-import { createInfluencer, getAllInfluencers, getInfluencerById, toggleInfluencerStatus, updateInfluencer } from "../controllers/influencerConTroller.js";
+import { createInfluencer, getAllInfluencers, getInfluencerById, toggleInfluencerStatus, updateInfluencer } from "../controllers/influencerController.js";
 import { upload } from "../config/s3Config.js";
 
 const router = Router();
