@@ -57,7 +57,7 @@ app.use('/v1/leads', leadRoutes);
 app.use('/v1/addresses', addressRoutes);
 app.use('/v1/coupons', couponRoutes);
 app.use('/v1/reviews', reviewRoutes);
-app.use('/api/settings', settingRoutes);
+app.use('/v1/settings', settingRoutes);
 
 app.get("/", (req, res) => {
   res.send("API is running....");
