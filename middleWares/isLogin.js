@@ -7,7 +7,7 @@ export const isLogin=async(req,res,next)=>{
     const token=req.cookies.token || req.header('Authorization')?.replace('Bearer ', '');
     
     try {
-        if(!token){
+        if(!token|| token===undefined){
            return res.status(404).json({
                 message:"No Token"
             })

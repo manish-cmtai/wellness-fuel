@@ -12,34 +12,24 @@ const OrderItemSchema = new Schema(
   { _id: false }
 );
 
-const AddressSchema = new Schema(
-  {
-    fullName: { type: String },
-    addressLine1: { type: String },
-    addressLine2: { type: String },
-    city: { type: String },
-    state: { type: String },
-    postalCode: { type: String },
-    country: { type: String, default: 'India' },
-    phone: { type: String }
-  },
-  { _id: false }
-);
 
 const OrderSchema = new Schema(
   {
     orderNumber: { type: String, required: true, unique: true },
     user: { type: Schema.Types.ObjectId, ref: 'User', required: true }, 
-    shippingAddress: AddressSchema,
+    shippingAddress: {
+      type:Schema.Types.ObjectId, 
+      ref:'Address'
+    },
     items: { type: [OrderItemSchema], default: [] },
     paymentMethod: {
       type: String,
-      enum: ['Credit Card', 'Debit Card', 'NetBanking', 'UPI', 'COD', 'Wallet'],
+      enum: ['Credit Card', 'Debit Card', 'NetBanking', 'UPI', 'COD'],
       default: 'Credit Card'
     },
     paymentStatus: {
       type: String,
-      enum: ['Paid', 'Pending', 'Failed', 'Refunded'],
+      enum: ['Paid', 'Pending', 'Failed', 'Refunded',"Processing"],
       default: 'Pending'
     },
     status: {
@@ -52,7 +42,11 @@ const OrderSchema = new Schema(
     subtotal: { type: Number, default: 0 },
     totalAmount: { type: Number, default: 0 },
     notes: { type: String },
-    isPaid: { type: Boolean, default: false }
+    isCouponApplied: { type: Boolean, default: false },
+    couponCode: { type: String  },
+    discountType: { type: String, enum: ['Percentage', 'Fixed'] },
+    discountValue: { type: Number, default: 0 },
+    address:{ type: Schema.Types.ObjectId, ref: 'Address'  }
   },
   { timestamps: true }
 );

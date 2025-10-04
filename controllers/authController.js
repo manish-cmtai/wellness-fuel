@@ -92,3 +92,35 @@ export const check=async(req,res)=>{
         })
     }
 }
+export const resetPassword=async(req,res)=>{
+    const {oldPassword,newPassword}=req.body
+    if(!oldPassword||!newPassword){
+        return res.status(403).json({
+            message:"All Detail Required"
+        })
+    }
+    try {
+        const user = await User.findById(req.user._id);
+        if (!user) {
+            return res.status(404).json({
+                message:"User Not Found"
+            })
+        }
+        const isMatch = await passwordCheck(oldPassword, user.password);
+        if (!isMatch) {
+            return res.status(403).json({
+                message:"Old Password is Incorrect"
+            })
+        }
+        user.password = newPassword;
+        await user.save();
+        res.status(200).json({
+            message:"Password Reset Successfully"
+        })
+    } catch (error) {
+        console.log(error + ' resetPassword problem');
+        res.status(500).json({
+            message:"server error"
+        })
+    }
+}

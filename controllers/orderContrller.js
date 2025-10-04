@@ -2,29 +2,27 @@ import mongoose from 'mongoose';
 import Order from '../models/orderModel.js';
 
 
-
-// Utils
-const isValidId = (id) => mongoose.isValidObjectId(id);
+const isId = (id) => mongoose.isValidObjectId(id);
 
 // Create
 export async function createOrder(req, res) {
   try {
-    const order = new Order(req.body);
-    const saved = await order.save();
-    await saved.populate([
+    const order = await Order.create(req.body);
+    const saved = await order.populate([
       { path: 'user', select: 'firstName lastName email' },
-      { path: 'items.product', select: 'name price' }
+      { path: 'items.product', select: 'name price' },
+      { path: 'address', select: 'address state city pinCode' }
     ]);
-    res.status(201).json(saved);
+    res.status(201).json({ success: true, data: saved });
   } catch (err) {
     if (err.code === 11000 && err.keyPattern?.orderNumber) {
-      return res.status(409).json({ error: 'Order number already exists' });
+      return res.status(409).json({ success: false, message: 'Order number already exists' });
     }
-    res.status(400).json({ error: err.message });
+    res.status(400).json({ success: false, message: err.message });
   }
 }
 
-
+// List with filters and pagination
 export async function listOrders(req, res) {
   try {
     const {
@@ -34,24 +32,32 @@ export async function listOrders(req, res) {
       paymentStatus,
       user,
       q,
+      from,
+      to,
       sort = '-createdAt'
     } = req.query;
 
     const filter = {};
     if (status) filter.status = status;
     if (paymentStatus) filter.paymentStatus = paymentStatus;
-    if (user && isValidId(user)) filter.user = user;
+    if (user && isId(user)) filter.user = user;
     if (q) {
       filter.$or = [
         { orderNumber: new RegExp(q, 'i') },
         { trackingNumber: new RegExp(q, 'i') }
       ];
     }
+    if (from || to) {
+      filter.createdAt = {};
+      if (from) filter.createdAt.$gte = new Date(from);
+      if (to) filter.createdAt.$lte = new Date(to);
+    }
 
     const [orders, total] = await Promise.all([
       Order.find(filter)
         .populate({ path: 'user', select: 'firstName lastName email' })
         .populate({ path: 'items.product', select: 'name price' })
+        .populate({ path: 'address', select: 'address state city pinCode' })
         .sort(sort)
         .skip((page - 1) * limit)
         .limit(Number(limit)),
@@ -59,139 +65,71 @@ export async function listOrders(req, res) {
     ]);
 
     res.json({
+      success: true,
       data: orders,
-       pagination: {
+      pagination: {
         page: Number(page),
         limit: Number(limit),
         total,
-        pages: Math.ceil(total / Number(limit)),
-        hasNext: Number(page) * Number(limit) < total,
-        hasPrev: Number(page) > 1
+        pages: Math.ceil(total / limit),
       }
     });
   } catch (err) {
-    res.status(400).json({ error: err.message });
+    res.status(400).json({ success: false, message: err.message });
   }
 }
 
-
+// Get one
 export async function getOrderById(req, res) {
   try {
     const { id } = req.params;
-    if (!isValidId(id)) return res.status(400).json({ error: 'Invalid order id' });
+    if (!isId(id)) return res.status(400).json({ success: false, message: 'Invalid id' });
 
     const order = await Order.findById(id)
       .populate({ path: 'user', select: 'firstName lastName email' })
-      .populate({ path: 'items.product', select: 'name price' });
+      .populate({ path: 'items.product', select: 'name price' })
+      .populate({ path: 'address', select: 'address state city pinCode' });
 
-    if (!order) return res.status(404).json({ error: 'Order not found' });
-    res.json(order);
+    if (!order) return res.status(404).json({ success: false, message: 'Order not found' });
+    res.json({ success: true, data: order });
   } catch (err) {
-    res.status(400).json({ error: err.message });
+    res.status(400).json({ success: false, message: err.message });
   }
 }
 
-
+// Update
 export async function updateOrder(req, res) {
   try {
     const { id } = req.params;
-    if (!isValidId(id)) return res.status(400).json({ error: 'Invalid order id' });
+    if (!isId(id)) return res.status(400).json({ success: false, message: 'Invalid id' });
 
     const updated = await Order.findByIdAndUpdate(id, req.body, {
       new: true,
       runValidators: true
     })
       .populate({ path: 'user', select: 'firstName lastName email' })
-      .populate({ path: 'items.product', select: 'name price' });
+      .populate({ path: 'items.product', select: 'name price' })
+      .populate({ path: 'address', select: 'address state city pinCode' });
 
-    if (!updated) return res.status(404).json({ error: 'Order not found' });
-    res.json(updated);
+    if (!updated) return res.status(404).json({ success: false, message: 'Order not found' });
+    res.json({ success: true, message: 'Order updated', data: updated });
   } catch (err) {
-    res.status(400).json({ error: err.message });
+    res.status(400).json({ success: false, message: err.message });
   }
 }
 
-
+// Delete
 export async function deleteOrder(req, res) {
   try {
     const { id } = req.params;
-    if (!isValidId(id)) return res.status(400).json({ error: 'Invalid order id' });
+    if (!isId(id)) return res.status(400).json({ success: false, message: 'Invalid id' });
 
     const deleted = await Order.findByIdAndDelete(id);
-    if (!deleted) return res.status(404).json({ error: 'Order not found' });
-    res.json({ message: 'Order deleted', id });
+    if (!deleted) return res.status(404).json({ success: false, message: 'Order not found' });
+    res.json({ success: true, message: 'Order deleted', id });
   } catch (err) {
-    res.status(400).json({ error: err.message });
+    res.status(400).json({ success: false, message: err.message });
   }
 }
 
 
-export async function updateOrderStatus(req, res) {
-  try {
-    const { id } = req.params;
-    const { status } = req.body;
-    if (!isValidId(id)) return res.status(400).json({ error: 'Invalid order id' });
-    if (!status) return res.status(400).json({ error: 'Status is required' });
-
-    const updated = await Order.findByIdAndUpdate(
-      id,
-      { status },
-      { new: true, runValidators: true }
-    );
-    if (!updated) return res.status(404).json({ error: 'Order not found' });
-    res.json(updated);
-  } catch (err) {
-    res.status(400).json({ error: err.message });
-  }
-}
-
-
-export async function updatePayment(req, res) {
-  try {
-    const { id } = req.params;
-    const { paymentStatus, paymentMethod, transactionId } = req.body;
-    if (!isValidId(id)) return res.status(400).json({ error: 'Invalid order id' });
-
-    const payload = {};
-    if (paymentStatus) payload.paymentStatus = paymentStatus;
-    if (paymentMethod) payload.paymentMethod = paymentMethod;
-    if (transactionId) payload.trackingNumber = transactionId; // or store elsewhere
-
-    // recompute isPaid flag
-    if (paymentStatus) payload.isPaid = paymentStatus === 'Paid';
-
-    const updated = await Order.findByIdAndUpdate(id, payload, {
-      new: true,
-      runValidators: true
-    });
-    if (!updated) return res.status(404).json({ error: 'Order not found' });
-    res.json(updated);
-  } catch (err) {
-    res.status(400).json({ error: err.message });
-  }
-}
-
-
-export async function addItem(req, res) {
-  try {
-    const { id } = req.params;
-    const item = req.body; // { product, name, quantity, price, total? }
-    if (!isValidId(id)) return res.status(400).json({ error: 'Invalid order id' });
-    if (!item?.product || !item?.name || !item?.quantity || !item?.price) {
-      return res.status(400).json({ error: 'product, name, quantity, price are required' });
-    }
-    item.total = item.total ?? item.price * item.quantity;
-
-    const order = await Order.findById(id);
-    if (!order) return res.status(404).json({ error: 'Order not found' });
-
-    order.items.push(item);
-    await order.validate(); // triggers pre-validate recompute of totals
-    const saved = await order.save();
-
-    await saved.populate({ path: 'items.product', select: 'name price' });
-    res.json(saved);
-  } catch (err) {
-    res.status(400).json({ error: err.message });
-  }
-}

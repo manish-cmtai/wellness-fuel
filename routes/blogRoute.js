@@ -1,18 +1,16 @@
 import {Router} from "express"
 import { blogGenerate, createBlog, deleteBlog, getAllBlogs, getBlogById, updateBlog } from "../controllers/blogController.js"
+import { isLogin } from "../middleWares/isLogin.js"
 
 const router=Router()
 
-router.post("/bloggenerate",blogGenerate)
+router.post("/bloggenerate",isLogin, blogGenerate)
 
-router.post("/create",createBlog)
+router.post("/create",isLogin, createBlog)
 
-router.get("/",getAllBlogs)
-router.get("/:id",getBlogById)
-
-
-router.put("/:id",updateBlog)
-
-router.delete("/:id",deleteBlog)
+router.get("/",isLogin, getAllBlogs)
+router.get("/:id",isLogin, getBlogById)
+router.put("/:id",isLogin, updateBlog)
+router.delete("/:id",isLogin, deleteBlog)
 
 export default router

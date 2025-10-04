@@ -10,6 +10,11 @@ import ratingRouter from "./routes/ratingRoute.js";
 import categoryRoutes from "./routes/categoryRoute.js";
 import orderRoutes from './routes/orderRoute.js';
 import leadRoutes from './routes/leadRoute.js';
+import addressRoutes from './routes/addressRouter.js';
+import couponRoutes from './routes/couponRouter.js';
+import reviewRoutes from './routes/reviewRouter.js';
+import seoRoutes from './routes/seoRouter.js';
+import cookieParser from "cookie-parser";
 
 dotenv.config();
 
@@ -19,6 +24,7 @@ const port = process.env.PORT;
 
 const app = express();
 
+app.use(cookieParser());
 const allowedOrigins = [
   "http://localhost:3000",
   "https://wellness-fuel.vercel.app"
@@ -48,6 +54,10 @@ app.use("/v1/ratings", ratingRouter);
 app.use("/v1/categories", categoryRoutes);
 app.use('/v1/orders', orderRoutes);
 app.use('/v1/leads', leadRoutes);
+app.use('/v1/addresses', addressRoutes);
+app.use('/v1/coupons', couponRoutes);
+app.use('/v1/reviews', reviewRoutes);
+app.use('/api/seo', seoRoutes);
 
 app.get("/", (req, res) => {
   res.send("API is running....");
