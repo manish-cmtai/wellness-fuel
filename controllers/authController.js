@@ -9,7 +9,6 @@ export const login= async(req,res)=>{
     
     const ip = req.headers["x-forwarded-for"]?.split(",")[0] ||  req.socket.remoteAddress;
      const userAgent = req.headers["user-agent"];
-     console.log(ip,userAgent);
      
     if(!email||!password){
         res.status(403).json({
@@ -23,7 +22,7 @@ export const login= async(req,res)=>{
         
         if(!user){
             res.status(404).json({
-                message:"User Not Found"
+                message:"Invalid Credential"
             })
         }
         const checkedPassword = await passwordCheck(password,user.password)
@@ -31,15 +30,15 @@ export const login= async(req,res)=>{
         
         if(!checkedPassword){
             res.status(404).json({
-                message:" Detail Wrong"
+                message:"Invalid Credential"
             })
         }
           const token = generateToken(user._id)
 
             const parser = new UAParser(req.headers["user-agent"]);
-             const deviceInfo = parser.getResult();
+            const deviceInfo = parser.getBrowser().getDevice().getOS();
           const session= await Session.create({
-            user:user._id,
+            user:user.role,
             userAgent,
             ipAddress:ip,
             isValid:true,
@@ -51,7 +50,8 @@ export const login= async(req,res)=>{
           })
           
        return res.status(200).cookie("token",token).json({
-            message:"login",
+            message:"login successfully",
+            statusCode:200,
             session
         })
     } catch (error) {

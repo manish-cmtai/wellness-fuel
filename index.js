@@ -15,6 +15,8 @@ import couponRoutes from './routes/couponRouter.js';
 import reviewRoutes from './routes/reviewRouter.js';
 import cookieParser from "cookie-parser";
 import settingRoutes from './routes/settingRoute.js';
+import notesRoute from './routes/notesRoute.js';
+import sessionRoute from './routes/sessionRoute.js';
 
 dotenv.config();
 
@@ -58,6 +60,8 @@ app.use('/v1/addresses', addressRoutes);
 app.use('/v1/coupons', couponRoutes);
 app.use('/v1/reviews', reviewRoutes);
 app.use('/v1/settings', settingRoutes);
+app.use('/v1/notes', notesRoute);
+app.use('/v1/sessions', sessionRoute);
 
 app.get("/", (req, res) => {
   res.send("API is running....");

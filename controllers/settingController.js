@@ -21,6 +21,10 @@ export async function upsertSettings(req, res) {
 export async function getAllSettings(req, res) {
   try {
     const settings = await Setting.findOne({});
+    if(!settings) {
+      const newSettings = await Setting.create({});
+      return res.status(200).json({ success: true, data: newSettings });
+    }
     res.json({ success: true, data: settings });
   } catch (err) {
     res.status(400).json({ success: false, message: err.message });
@@ -108,7 +112,7 @@ export async function updateSettings(req, res) {
       { new: true, runValidators: true }
     );
     if (!settings) {
-      return res.status(404).json({ success: false, message: 'Settings not found' });
+      return res.status(200).json({ success: true, message: 'Settings not found' });
     }
     res.json({ success: true, data: settings });
   } catch (err) {
