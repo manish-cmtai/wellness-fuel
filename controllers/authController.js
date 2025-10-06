@@ -21,15 +21,15 @@ export const login= async(req,res)=>{
      
         
         if(!user){
-            res.status(404).json({
+            res.status(401).json({
                 message:"Invalid Credential"
             })
         }
-        const checkedPassword = await passwordCheck(password,user.password)
+        const checkedPassword = await passwordCheck(password,user.password);
  
         
         if(!checkedPassword){
-            res.status(404).json({
+            res.status(401).json({
                 message:"Invalid Credential"
             })
         }
@@ -38,7 +38,7 @@ export const login= async(req,res)=>{
             const parser = new UAParser(req.headers["user-agent"]);
             const deviceInfo = parser.getResult();
           const session= await Session.create({
-            user:user.role,
+            user:user._id,
             userAgent,
             ipAddress:ip,
             isValid:true,
