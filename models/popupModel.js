@@ -13,7 +13,8 @@ const fieldSchema = new Schema({
   isRequired: {
     type: Boolean,
     default: false
-  }
+  },
+  _id: false
 });
 
 const popupSchema = new Schema({
@@ -102,15 +103,7 @@ const popupSchema = new Schema({
     type: String,
     default: '#000000'
   },
-  createdOn: {
-    type: Date,
-    default: Date.now()
-  },
-  updatedOn: {
-    type: Date,
-    default: Date.now()
-  }
-});
+}, { timestamps: true });
 
 const Popup = model('Popup', popupSchema);
 

@@ -18,6 +18,7 @@ import settingRoutes from './routes/settingRoute.js';
 import notesRoute from './routes/notesRoute.js';
 import sessionRoute from './routes/sessionRoute.js';
 import popupRoute from './routes/popupRoute.js'
+import newsLetterRoute from './routes/newsLetterRoute.js'
 
 dotenv.config();
 
@@ -64,6 +65,7 @@ app.use('/v1/settings', settingRoutes);
 app.use('/v1/notes', notesRoute);
 app.use('/v1/sessions', sessionRoute);
 app.use('/v1/popups', popupRoute);
+app.use('/v1/newsletters', newsLetterRoute);
 
 app.get("/", (req, res) => {
   res.send("API is running....");
