@@ -13,13 +13,35 @@ export async function createSubscription(req, res) {
 }
 export async function getSubscriptions(req, res) {
   try {
-    const subscriptions = await NewsLetter.find();
-    res.status(200).json(subscriptions);
+    const { page = 1, limit = 10 } = req.query;
+    const skip = (Number(page) - 1) * Number(limit);
+
+    const [subscriptions, total] = await Promise.all([
+      NewsLetter.find()
+        .sort('-createdAt')
+        .skip(skip)
+        .limit(Number(limit)),
+      NewsLetter.countDocuments()
+    ]);
+
+    res.status(200).json({
+        success: true,
+      data: subscriptions,
+      pagination: {
+        page: Number(page),
+        limit: Number(limit),
+        total,
+        pages: Math.ceil(total / limit),
+        hasNext: skip + limit < total,
+        hasPrev: skip > 0
+      }
+    });
   } catch (error) {
     console.error("Error fetching subscriptions:", error);
     res.status(500).json({ message: "Internal server error" });
   } 
 }
+
 export async function updateSubscriptionStatus(req, res) {
   try {
     const { id } = req.params
@@ -32,7 +54,7 @@ export async function updateSubscriptionStatus(req, res) {
     await updatedSubscription.save();
 
     res.status(200).json(updatedSubscription);
-    
+
   } catch (error) {
     console.error("Error updating subscription status:", error);
     res.status(500).json({ message: "Internal server error" });
