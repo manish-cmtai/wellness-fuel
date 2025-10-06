@@ -36,7 +36,7 @@ export const login= async(req,res)=>{
           const token = generateToken(user._id)
 
             const parser = new UAParser(req.headers["user-agent"]);
-            const deviceInfo = parser.getBrowser().getDevice().getOS();
+            const deviceInfo = parser.getResult();
           const session= await Session.create({
             user:user.role,
             userAgent,
