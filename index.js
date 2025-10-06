@@ -17,6 +17,7 @@ import cookieParser from "cookie-parser";
 import settingRoutes from './routes/settingRoute.js';
 import notesRoute from './routes/notesRoute.js';
 import sessionRoute from './routes/sessionRoute.js';
+import popupRoute from './routes/popupRoute.js'
 
 dotenv.config();
 
@@ -62,6 +63,7 @@ app.use('/v1/reviews', reviewRoutes);
 app.use('/v1/settings', settingRoutes);
 app.use('/v1/notes', notesRoute);
 app.use('/v1/sessions', sessionRoute);
+app.use('/v1/popups', popupRoute);
 
 app.get("/", (req, res) => {
   res.send("API is running....");

@@ -7,8 +7,11 @@ const isId = (id) => mongoose.isValidObjectId(id);
 // Create
 export async function createCoupon(req, res) {
   try {
-    const payload = { ...req.body, code: req.body.code?.toUpperCase().trim() };
+    const payload = req.body ;
     const coupon = await Coupon.create(payload);
+    if (!coupon) {
+      return res.status(400).json({ success: false, message: 'Coupon creation failed' });
+    }
     res.status(201).json({ success: true, data: coupon });
   } catch (err) {
     if (err.code === 11000 && err.keyPattern?.code) {
@@ -220,13 +223,13 @@ export async function validateAndApply(req, res) {
 }
 
 // Increment usage count (call after successful order placement)
-export async function incrementUsage(req, res) {
+export async function redeem(req, res) {
   try {
-    const { id } = req.params;
-    if (!isId(id)) return res.status(400).json({ success: false, message: 'Invalid id' });
+    const { code } = req.body;
+    if (!code) return res.status(400).json({ success: false, message: 'Invalid code' });
 
-    const updated = await Coupon.findByIdAndUpdate(
-      id,
+    const updated = await Coupon.findOneAndUpdate(
+      { code: code.toUpperCase().trim() },
       { $inc: { usedCount: 1 } },
       { new: true }
     );
