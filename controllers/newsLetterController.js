@@ -1,14 +1,18 @@
+
 import NewsLetter from "../models/newsLetterModel.js";
 
 export async function createSubscription(req, res) {
   try {
     const { email } = req.body;
     const newSubscription = new NewsLetter({ email });
+    if (!email) {
+      return res.status(400).json({ message: "Email is required" , success:false });
+    }
     await newSubscription.save();
-    res.status(201).json({ message: "Subscription created successfully" });
+    res.status(201).json({ message: "Subscription created successfully", success:true });
   } catch (error) {
-    console.error("Error creating subscription:", error);
-    res.status(500).json({ message: "Internal server error" });
+  
+    res.status(500).json({success:false, message: error.code === 11000 ? "Email already subscribed" : "Internal server error" });
   }
 }
 export async function getSubscriptions(req, res) {
@@ -38,7 +42,7 @@ export async function getSubscriptions(req, res) {
     });
   } catch (error) {
     console.error("Error fetching subscriptions:", error);
-    res.status(500).json({ message: "Internal server error" });
+    res.status(500).json({ message: error.message, success:false });
   } 
 }
 
@@ -48,16 +52,16 @@ export async function updateSubscriptionStatus(req, res) {
 
     const updatedSubscription = await NewsLetter.findById(id);
     if (!updatedSubscription) {
-      return res.status(404).json({ message: "Subscription not found" });
+      return res.status(404).json({ message: "Subscription not found", success:false });
     }
     updatedSubscription.status = updatedSubscription.status === 'Subscribed' ? 'Unsubscribed' : 'Subscribed';
     await updatedSubscription.save();
 
-    res.status(200).json(updatedSubscription);
+    res.status(200).json({success: true, data: updatedSubscription });
 
   } catch (error) {
     console.error("Error updating subscription status:", error);
-    res.status(500).json({ message: "Internal server error" });
+    res.status(500).json({ message: error.message, success:false });
   }
 }
 export async function deleteSubscription(req, res) {
@@ -65,12 +69,12 @@ export async function deleteSubscription(req, res) {
     const { id } = req.params;
     const deletedSubscription = await NewsLetter.findByIdAndDelete(id);
     if (!deletedSubscription) {
-      return res.status(404).json({ message: "Subscription not found" });
+      return res.status(404).json({ message: "Subscription not found" , success:false });
     }
     res.status(200).json({success: true, message: "Subscription deleted successfully" });
   } catch (error) {
     console.error("Error deleting subscription:", error);
-    res.status(500).json({ message: "Internal server error" });
+    res.status(500).json({ message: error.message, success:false });
   }
 }
 
@@ -79,11 +83,11 @@ export async function getSubscriptionById(req, res) {
     const { id } = req.params;
     const subscription = await NewsLetter.findById(id);
     if (!subscription) {
-      return res.status(404).json({ message: "Subscription not found" });
+      return res.status(404).json({ message: "Subscription not found", success:false });
     }
-    res.status(200).json(subscription);
+    res.status(200).json({success: true, data: subscription });
   } catch (error) {
     console.error("Error fetching subscription:", error);
-    res.status(500).json({ message: "Internal server error" });
+    res.status(500).json({ message: error.message, success:false });
   }
 }

@@ -70,7 +70,7 @@ const UserSchema = new mongoose.Schema(
     occupation:{
       type:String
     },
-    bloodeGroup:{
+    bloodGroup:{
       type:String,
       enum:["A+","A-","B+","B-","AB+","AB-","O+","O-"]
     },
