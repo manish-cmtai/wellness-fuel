@@ -10,12 +10,12 @@ export async function createCoupon(req, res) {
     const payload = req.body ;
     const coupon = await Coupon.create(payload);
     if (!coupon) {
-      return res.status(400).json({ success: false, message: 'Coupon creation failed' });
+      return res.status(400).json({ success: false, message: 'Something Went Wrong While Creating The Coupon' });
     }
     res.status(201).json({ success: true, data: coupon });
   } catch (err) {
     if (err.code === 11000 && err.keyPattern?.code) {
-      return res.status(409).json({ success: false, message: 'Coupon code already exists' });
+      return res.status(409).json({ success: false, message: 'Coupon Code Already Exists' });
     }
     res.status(400).json({ success: false, message: err.message });
   }

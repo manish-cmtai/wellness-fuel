@@ -7,8 +7,8 @@ const fieldSchema = new Schema({
   },
   fieldType: {
     type: String,
-    enum: ['text', 'email', 'tel', 'number', 'date'],
-    default: 'text'
+    enum: ['Text', 'Email', 'Tel', 'Number', 'Date'],
+    default: 'Text'
   },
   isRequired: {
     type: Boolean,
@@ -45,8 +45,8 @@ const popupSchema = new Schema({
   status: {
     type: String,
     required: true,
-    enum: ['active', 'inactive'],
-    default: "active",
+    enum: ['Active', 'Inactive'],
+    default: "Active",
   },
   // Button settings
   ctaButtonText: {
