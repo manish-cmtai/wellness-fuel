@@ -67,7 +67,7 @@ export async function deleteSubscription(req, res) {
     if (!deletedSubscription) {
       return res.status(404).json({ message: "Subscription not found" });
     }
-    res.status(200).json({ message: "Subscription deleted successfully" });
+    res.status(200).json({success: true, message: "Subscription deleted successfully" });
   } catch (error) {
     console.error("Error deleting subscription:", error);
     res.status(500).json({ message: "Internal server error" });
