@@ -20,6 +20,17 @@ import sessionRoute from './routes/sessionRoute.js';
 import popupRoute from './routes/popupRoute.js'
 import newsLetterRoute from './routes/newsLetterRoute.js'
 
+//doctor routes
+import appointmentRoute from './routes/appointmentRoute.js';
+import patientRoute from './routes/patientRoute.js';
+import prescriptionRoute from './routes/prescriptionRoute.js';
+import reportRoute from './routes/reportRoute.js';
+import dashboardRoute from './routes/dashboardRoute.js';
+
+//customer routes
+import customerRoute from './routes/customerRoute.js';
+import paymentMethodRoute from './routes/paymentMethodRoute.js';
+
 dotenv.config();
 
 dbConnection();
@@ -66,6 +77,17 @@ app.use('/v1/notes', notesRoute);
 app.use('/v1/sessions', sessionRoute);
 app.use('/v1/popups', popupRoute);
 app.use('/v1/newsletters', newsLetterRoute);
+
+//doctor
+app.use("/v1/appointments", appointmentRoute);
+app.use('/v1/patients', patientRoute);
+app.use('/v1/prescriptions', prescriptionRoute);
+app.use('/v1/reports', reportRoute);
+app.use('/v1/dashboard', dashboardRoute);
+
+//customer routes
+app.use('/v1/customer', customerRoute);
+app.use('/v1/payment-methods', paymentMethodRoute);
 
 app.get("/", (req, res) => {
   res.send("API is running....");

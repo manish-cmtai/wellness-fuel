@@ -1,25 +1,27 @@
 import { Router } from 'express';
 import {
-  createNote,
-  listNotes,
-  getNoteById,
-  updateNote,
-  deleteNote,
-  getNotesByCategory,
-  getFavoriteNotes
+    createNote,
+    listNotes,
+    getNoteById,
+    updateNote,
+    deleteNote,
+    toggleFavoriteNote,
+    getNoteStats,
+    exportNotes
 } from '../controllers/notesController.js';
+import { isLogin } from '../middleWares/isLogin.js';
 
 const router = Router();
 
-// CRUD
+router.use(isLogin);
+
 router.post('/', createNote);
 router.get('/', listNotes);
+router.get('/stats', getNoteStats);
+router.get('/export', exportNotes);
 router.get('/:id', getNoteById);
 router.put('/:id', updateNote);
 router.delete('/:id', deleteNote);
-
-// Filters
-router.get('/category/:category', getNotesByCategory);
-router.get('/favorites/list', getFavoriteNotes);
+router.patch('/:id/favorite', toggleFavoriteNote);
 
 export default router;

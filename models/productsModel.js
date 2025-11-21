@@ -70,7 +70,19 @@ const productSchema = new mongoose.Schema({
   },
   images:[{
     type: String
-  }]
+  }],
+
+
+  //doctor prescription
+  genericName: { type: String },
+    dosageForm: { // E.g., 500 mg, 100 units/ml
+        value: { type: String },
+        unit: { type: String }
+    },
+    manufacturer: { type: String },
+    isPrescriptionRequired: { type: Boolean, default: true },
+    sideEffects: [{ type: String }],
+    contraindications: [{ type: String }],
   
 }, {
   timestamps: true

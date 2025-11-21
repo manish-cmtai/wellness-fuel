@@ -1,90 +1,142 @@
 import mongoose from "mongoose";
-import bcrypt from "bcrypt"
+import bcrypt from "bcrypt";
 
 const UserSchema = new mongoose.Schema(
   {
-    firstName: { type: String, required: true },
-    lastName: { type: String, required: true },
-    email: { type: String, required: true, unique: true },
-    password: { type: String, required: true },
-    phone: { type: String, required: true, unique: true },
+    firstName: {
+      type: String,
+      required: true
+    },
+    lastName: {
+      type: String,
+      required: true
+    },
+    email: {
+      type: String,
+      required: true,
+      unique: true,
+      lowercase: true,
+      trim: true
+    },
+    password: {
+      type: String,
+      required: true
+    },
+    phone: {
+      type: String,
+      required: true,
+      unique: true
+    },
     role: {
       type: String,
       enum: ["Admin", "Doctor", "Influencer", "Customer"],
       default: "Customer",
     },
-    status: { type: String, enum: ["Active", "Inactive"], default: "Active" },
-    dateOfBirth: { type: Date },
-    verified: { type: Boolean, default: false },
-    address: { type: String },
-    bio: { type: String },
-    hospital:{
-      type:String,
+    status: {
+      type: String,
+      enum: ["active", "inactive", "discharged", "emergency"],
+      default: "active",
     },
-    experience:{
-      type:Number,
+    imageUrl: {
+      type: String,
+      default: ""
     },
-    consultationFee:{
-      type:Number,
+    dateOfBirth: {
+      type: Date
     },
-    specialization:{
-      type:String,
+    age: {
+      type: Number
     },
-    location:{
-      type:String
+    bloodGroup: {
+      type: String,
+      enum: ["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"],
     },
-    qualifications:{
-      type:String
+    location: {
+      type: String
     },
-    platform:{
-      type:String
+    patientType: {
+      type: String,
+      enum: ["new", "regular", "vip", "emergency"],
+      default: "new",
     },
-    followers:{
-      type:Number
-    },
-    category:{
-      type:String
-    },
-    socialMediaLinks:{
-      type:String
-    },
-    commissionRate:{
-      type:Number
-    },
-    availability:{
-      type:String
-    },
-    note:{
-      type:String
-    },
-    customerType:{
-      type:String
-    },
-    isActive:{
-      type:Boolean,
-      default:true
-    },
-    language:[{
-      type:String
+    medicalHistory: [{
+      type: String
     }],
-    occupation:{
-      type:String
+    currentMedications: [{
+      type: String
+    }],
+    allergies: [{
+      type: String
+    }],
+    emergencyContact: {
+      name: { type: String },
+      phone: { type: String },
     },
-    bloodGroup:{
-      type:String,
-      enum:["A+","A-","B+","B-","AB+","AB-","O+","O-"]
+    insuranceProvider: {
+      type: String
     },
-    age:{
-      type:Number
+    tags: [{
+      type: String
+    }],
+    notes: {
+      type: String
     },
-    maritalStatus:{
-      type:String,
-      enum:["Single","Married","Divorced","Widowed"]
+    hospital: {
+      type: String
     },
-    twoFactorEnabled:{
-      type:Boolean,
-      default:false
-    },imageUrl:{ type: String  }
+    experience: {
+      type: Number
+    },
+    consultationFee: {
+      type: Number
+    },
+    specialization: {
+      type: String
+    },
+    qualifications: {
+      type: String
+    },
+    availability: {
+      type: String
+    },
+    language: [{
+      type: String
+    }],
+    platform: {
+      type: String
+    },
+    followers: {
+      type: Number
+    },
+    category: {
+      type: String
+    },
+    socialMediaLinks: {
+      type: String
+    },
+    commissionRate: {
+      type: Number
+    },
+    occupation: {
+      type: String
+    },
+    maritalStatus: {
+      type: String,
+      enum: ["Single", "Married", "Divorced", "Widowed"],
+    },
+    twoFactorEnabled: {
+      type: Boolean,
+      default: false
+    },
+
+    //customer routes
+    paymentMethods: [{
+      cardType: { type: String, required: true },
+      cardNumber: { type: String, required: true },
+      cardHolderName: { type: String, required: true },
+      expiryDate: { type: String, required: true },
+      isDefault: { type: Boolean, default: false }
+    }]
   },
   { timestamps: true }
 );
@@ -93,8 +145,12 @@ UserSchema.pre("save", async function (next) {
   if (!this.isModified("password")) {
     return next();
   }
-  this.password = await bcrypt.hash(this.password, 10);
-  next();
+  try {
+    this.password = await bcrypt.hash(this.password, 10);
+    next();
+  } catch (error) {
+    next(error);
+  }
 });
 
 const User = mongoose.model("User", UserSchema);
