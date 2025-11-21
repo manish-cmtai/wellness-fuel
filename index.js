@@ -31,6 +31,12 @@ import dashboardRoute from './routes/dashboardRoute.js';
 import customerRoute from './routes/customerRoute.js';
 import paymentMethodRoute from './routes/paymentMethodRoute.js';
 
+//influencer routes
+import influencerReferralRoute from './routes/influencerReferralRoute.js';
+import influencerNoteRoute from './routes/influencerNoteRoute.js';
+import influencerReportRoute from './routes/influencerReportRoute.js';
+import influencerSettingsRoute from './routes/influencerSettingsRoute.js';
+
 dotenv.config();
 
 dbConnection();
@@ -77,7 +83,6 @@ app.use('/v1/notes', notesRoute);
 app.use('/v1/sessions', sessionRoute);
 app.use('/v1/popups', popupRoute);
 app.use('/v1/newsletters', newsLetterRoute);
-
 //doctor
 app.use("/v1/appointments", appointmentRoute);
 app.use('/v1/patients', patientRoute);
@@ -89,10 +94,15 @@ app.use('/v1/dashboard', dashboardRoute);
 app.use('/v1/customer', customerRoute);
 app.use('/v1/payment-methods', paymentMethodRoute);
 
+//influencer routes
+app.use('/v1/influencer-referrals', influencerReferralRoute);
+app.use('/v1/influencer-notes', influencerNoteRoute);
+app.use('/v1/influencer-reports', influencerReportRoute);
+app.use('/v1/influencer-settings', influencerSettingsRoute);
+
 app.get("/", (req, res) => {
   res.send("API is running....");
 });
-
 app.listen(port, () => {
   console.log("server listen on port: ", port);
 });

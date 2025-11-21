@@ -5,32 +5,46 @@ const UserSchema = new mongoose.Schema(
   {
     firstName: {
       type: String,
-      required: true
+      required: true,
     },
     lastName: {
       type: String,
-      required: true
+      required: true,
     },
     email: {
       type: String,
       required: true,
       unique: true,
       lowercase: true,
-      trim: true
+      trim: true,
     },
     password: {
       type: String,
-      required: true
+      required: true,
     },
     phone: {
       type: String,
       required: true,
-      unique: true
+      unique: true,
     },
     role: {
       type: String,
       enum: ["Admin", "Doctor", "Influencer", "Customer"],
       default: "Customer",
+    },
+    referralCode: {
+      type: String,
+      unique: true,
+      sparse: true,
+      trim: true,
+    },
+    walletBalance: {
+      type: Number,
+      default: 0,
+    },
+    commissionRate: {
+      type: Number,
+      default: 10,
     },
     status: {
       type: String,
@@ -39,86 +53,93 @@ const UserSchema = new mongoose.Schema(
     },
     imageUrl: {
       type: String,
-      default: ""
+      default: "",
     },
     dateOfBirth: {
-      type: Date
+      type: Date,
     },
     age: {
-      type: Number
+      type: Number,
     },
     bloodGroup: {
       type: String,
       enum: ["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"],
     },
     location: {
-      type: String
+      type: String,
     },
     patientType: {
       type: String,
       enum: ["new", "regular", "vip", "emergency"],
       default: "new",
     },
-    medicalHistory: [{
-      type: String
-    }],
-    currentMedications: [{
-      type: String
-    }],
-    allergies: [{
-      type: String
-    }],
+    medicalHistory: [
+      {
+        type: String,
+      },
+    ],
+    currentMedications: [
+      {
+        type: String,
+      },
+    ],
+    allergies: [
+      {
+        type: String,
+      },
+    ],
     emergencyContact: {
       name: { type: String },
       phone: { type: String },
     },
     insuranceProvider: {
-      type: String
+      type: String,
     },
-    tags: [{
-      type: String
-    }],
+    tags: [
+      {
+        type: String,
+      },
+    ],
     notes: {
-      type: String
+      type: String,
     },
     hospital: {
-      type: String
+      type: String,
     },
     experience: {
-      type: Number
+      type: Number,
     },
     consultationFee: {
-      type: Number
+      type: Number,
     },
     specialization: {
-      type: String
+      type: String,
     },
     qualifications: {
-      type: String
+      type: String,
     },
     availability: {
-      type: String
+      type: String,
     },
-    language: [{
-      type: String
-    }],
+    language: [
+      {
+        type: String,
+      },
+    ],
     platform: {
-      type: String
+      type: String,
     },
     followers: {
-      type: Number
+      type: Number,
     },
     category: {
-      type: String
+      type: String,
     },
     socialMediaLinks: {
-      type: String
-    },
-    commissionRate: {
-      type: Number
+      type: String,
     },
     occupation: {
-      type: String
+      type: String,
     },
     maritalStatus: {
       type: String,
@@ -126,17 +147,17 @@ const UserSchema = new mongoose.Schema(
     },
     twoFactorEnabled: {
       type: Boolean,
-      default: false
+      default: false,
     },
-
-    //customer routes
-    paymentMethods: [{
-      cardType: { type: String, required: true },
-      cardNumber: { type: String, required: true },
-      cardHolderName: { type: String, required: true },
-      expiryDate: { type: String, required: true },
-      isDefault: { type: Boolean, default: false }
-    }]
+    paymentMethods: [
+      {
+        cardType: { type: String, required: true },
+        cardNumber: { type: String, required: true },
+        cardHolderName: { type: String, required: true },
+        expiryDate: { type: String, required: true },
+        isDefault: { type: Boolean, default: false },
+      },
+    ],
   },
   { timestamps: true }
 );
